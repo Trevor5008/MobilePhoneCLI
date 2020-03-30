@@ -8,13 +8,12 @@ public class Main {
 
     public static void main(String[] args) {
         boolean quit = false;
-        int choice;
         startPhone();
         printInstructions();
 
         while(!quit) {
             System.out.print("Enter a menu option ('6' to display options): ");
-            choice = scanner.nextInt();
+            int choice = scanner.nextInt();
             scanner.nextLine();
 
             switch(choice) {
@@ -56,6 +55,14 @@ public class Main {
         }
     }
 
+    /**
+     * Following method designed to locate existing contact from user input,
+     *  then allow user to decide whether they want to update the existing contact's
+     *  phone number (if new name matches existing)...if new number matches existing number
+     *  user will be notified of duplicate data...while loop designed to execute until user
+     *  selects either 'y' or 'n'
+     */
+    //TODO: Solution for existing phone number check across all contact records...
     private static void modifyContact() {
         System.out.print("Enter the name of the current contact: ");
         String oldName = scanner.nextLine();
@@ -63,16 +70,48 @@ public class Main {
             Contact oldContact = phone.queryContact(oldName);
             System.out.print("Enter the name of the new contact: ");
             String newName = scanner.nextLine();
-            System.out.print("Enter the new contact number: ");
-            String number = scanner.nextLine();
-            Contact newContact = Contact.addNewContact(newName, number);
-            phone.modifyContact(oldContact, newContact);
-            System.out.println("\t"+oldName+", has been replaced with: "+newName+"\n");
-        } else {
+            if(phone.onFile(newName)) {
+                System.out.println(newName + ", is already a contact");
+                boolean proceed = true;
+                while (proceed) {
+                    System.out.print("Update existing phone number(y/n)? ");
+                    String choice = scanner.nextLine();
+                    //Allow user to decide to update existing contact's number
+                    if (choice.equalsIgnoreCase("y")) {
+                        System.out.print("Enter the new phone number: ");
+                        String newNumber = scanner.nextLine();
+                        //Check whether new phone number matches existing
+                        if (oldContact.getPhoneNumber().equalsIgnoreCase(newNumber)) {
+                            System.out.println("Duplicate information");
+                        } else {
+                            Contact newContact = Contact.addNewContact(newName, newNumber);
+                            phone.modifyContact(oldContact, newContact);
+                            System.out.println(newName + "'s number has been updated to: "
+                                    + newContact.getPhoneNumber());
+                            proceed = false;
+                        }
+                    } else if (choice.equalsIgnoreCase("n")) {
+                        proceed = false;
+                    } else {
+                        System.out.println("Please enter a valid response: ");
+                    }
+                }
+            }
+            // As long as new name does not match existing, following code will execute
+            else {
+                System.out.print("Enter the new contact number: ");
+                String number = scanner.nextLine();
+                Contact newContact = Contact.addNewContact(newName, number);
+                phone.modifyContact(oldContact, newContact);
+                System.out.println("\t" + oldName + ", has been replaced with: " + newName + "\n");
+            }
+        }
+        // If existing name does not match existing contact, following will execute..
+        else {
             System.out.println("\t"+oldName+", is not one of your contacts\n");
-            return;
         }
     }
+
     private static void findContact() {
         System.out.print("Enter the name of the contact: ");
         String name = scanner.nextLine();
@@ -83,6 +122,7 @@ public class Main {
             System.out.println(name+ " is not one of your current contacts\n");
         }
     }
+
     private static void removeContact() {
         System.out.print("Enter the name of the contact to remove: ");
         String name = scanner.nextLine();

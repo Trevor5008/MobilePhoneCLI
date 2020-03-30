@@ -5,7 +5,7 @@ public class Contact {
     private String phoneNumber;
 
     // Constructor
-    public Contact(String name, String number) {
+    private Contact(String name, String number) {
         this.name = name;
         this.phoneNumber = number;
     }

@@ -10,7 +10,7 @@ public class MobilePhone {
     }
     // Add contacts
     public void addContact(String name, String number) {
-        Contact contact = new Contact(name, number);
+        Contact contact = Contact.addNewContact(name, number);
         contacts.add(contact);
     }
     // Modify/Update
